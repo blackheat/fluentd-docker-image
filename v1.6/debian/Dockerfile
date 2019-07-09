@@ -10,7 +10,6 @@ ENV TINI_VERSION=0.18.0
 # Docker creates a layer for every RUN-Statement
 # therefore an 'apt-get purge' has no effect
 RUN apt-get update \
- && apt-get install -y build-essential \
  && apt-get install -y --no-install-recommends \
             ca-certificates \
  && buildDeps=" \
@@ -49,11 +48,13 @@ RUN groupadd -r fluent && useradd -r -g fluent fluent \
     && mkdir -p /fluentd/etc /fluentd/plugins \
     && chown -R fluent /fluentd && chgrp -R fluent /fluentd
 
-# Install Elasticsearch plugin for fluentd
+# Install Elasticsearch plugin
 RUN fluent-gem install fluent-plugin-elasticsearch
-# Install Kubernetes metadata filter plugin for fluentd
+# Install build-essential
+RUN apt-get update && apt-get install -y build-essential
+# Install Kubernetes metadata filter
 RUN gem install fluent-plugin-kubernetes_metadata_filter
-# Install Kubernetes plugin for fluentd
+# Install Kubernetes support
 RUN gem install fluent-plugin-kubernetes
 
 COPY fluent.conf /fluentd/etc/
